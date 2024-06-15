@@ -1,4 +1,19 @@
-function main() {
+import { crawlPage } from "./crawl.js";
+
+function sortPages(pages) {
+  return Object.entries(pages).sort(([, a], [, b]) => b - a);
+}
+
+function generateReport(pages) {
+  console.log("Report is starting...");
+  const sortedPages = sortPages(pages);
+
+  for (const page of sortedPages) {
+    console.log(`Found ${page[1]} internal links to ${page[0]}`);
+  }
+}
+
+async function main() {
   const args = process.argv.length;
 
   if (args != 3) {
@@ -8,16 +23,18 @@ function main() {
   }
 
   const inputUrl = process.argv[2];
-  let baseURL;
+  let baseUrl;
 
   try {
-    baseURL = new URL(inputUrl);
+    baseUrl = new URL(inputUrl);
   } catch (error) {
     console.log("The input is not a valid url");
     return;
   }
 
-  console.log(`Using ${baseURL} as start`);
+  console.log(`Using ${inputUrl} as start`);
+  const pages = await crawlPage(inputUrl, inputUrl, {});
+  generateReport(pages);
 }
 
-main();
+await main();
